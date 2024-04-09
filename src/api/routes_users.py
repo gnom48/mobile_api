@@ -35,7 +35,7 @@ async def user_edit(user: User, token_authorization: str | None = Header(default
     ...
     
     
-@router_users.get("/statistics/get")
+@router_users.get("/statistics/get", status_code=200)
 async def user_statistics_get(period: str, token_authorization: str | None = Header(default=None)):
     if not token_authorization:
         raise HTTPException(status_code=400, detail="uncorrect header")
@@ -44,7 +44,7 @@ async def user_statistics_get(period: str, token_authorization: str | None = Hea
     return res
 
 
-@router_users.get("/statistics/update")
+@router_users.get("/statistics/update", status_code=200)
 async def user_statistics_update(statistic: str, addvalue: int, token_authorization: str | None = Header(default=None)):
     if not token_authorization:
         raise HTTPException(status_code=400, detail="uncorrect header")

@@ -173,24 +173,28 @@ class Repository:
         async with new_session() as session:
             try:
                 statistic_to_edit: DayStatisticsOrm = await session.get(DayStatisticsOrm, user_id)
+                print(user_id, statistic, addvalue)
+                print(statistic_to_edit.meets)
                 match statistic:
-                    case "flyers":
+                    case WorkTasksTypesOrm.FLYERS.value:
                         statistic_to_edit.flyers += addvalue
-                    case "calls":
+                    case WorkTasksTypesOrm.CALLS.value:
                         statistic_to_edit.calls += addvalue
-                    case "shows":
+                    case WorkTasksTypesOrm.SHOW.value:
                         statistic_to_edit.shows += addvalue
-                    case "meets":
+                    case WorkTasksTypesOrm.MEET.value:
+                        print(1000)
                         statistic_to_edit.meets += addvalue
-                    case "deals":
+                    case WorkTasksTypesOrm.DEAL.value:
                         statistic_to_edit.deals += addvalue
-                    case "deposits":
+                    case WorkTasksTypesOrm.DEPOSIT.value:
                         statistic_to_edit.deposits += addvalue
-                    case "searches":
+                    case WorkTasksTypesOrm.SEARCH.value:
                         statistic_to_edit.searches += addvalue
-                    case "analytics":
+                    case WorkTasksTypesOrm.ANALYTICS.value:
                         statistic_to_edit.analytics += addvalue
                     case _:
+                        print(-1000)
                         statistic_to_edit.others += addvalue
                 await session.commit()
                 return True
