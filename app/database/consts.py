@@ -1,1 +1,1 @@
-CONNRCTION_STR = "postgresql+asyncpg://postgres:630572@localhost:5432/rielters"
+CONNRCTION_STR = "postgresql+asyncpg://postgres:postgres@db:5432/postgres"

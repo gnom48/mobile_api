@@ -1,6 +1,7 @@
 from .database.orm import new_session
 from .database.models import *
 from .api.models import *
+import time
 from sqlalchemy import select, update, delete, and_
 
 
@@ -16,6 +17,7 @@ class Repository:
             try:
                 new_user = UserOrm(**data.model_dump())
                 new_user.type = UserTypesOrm[data.type.name]
+                new_user.reg_date = int(time.time())
                 new_user.id = None
                 session.add(new_user)
                 await session.flush()

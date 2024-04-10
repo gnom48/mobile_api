@@ -32,6 +32,7 @@ class User(BaseModel):
     password: str
     type: UserTypes
     photo: str
+    reg_date: int
 
     name: str
     gender: Optional[str]

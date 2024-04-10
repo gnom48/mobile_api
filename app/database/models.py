@@ -32,6 +32,7 @@ class UserOrm(BaseModelOrm):
     password: Mapped[str]
     type: Mapped[UserTypesOrm]
     photo: Mapped[str]
+    reg_date: Mapped[int]
 
     name = Column(String, default="Пользователь")
     gender: Mapped[str | None]
