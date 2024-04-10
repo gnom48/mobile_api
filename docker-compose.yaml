@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  app:
+    container_name: app_fast_api
+    build: ./
+    depends_on:
+      - db
+    command: bash -c 'while !</dev/tcp/postgres/5432; do sleep 1; done; uvicorn app.main:app --host 0.0.0.0 --port 8000'
+    volumes:
+      - ./app:/src/app
+    ports:
+      - ${APP_HOST_PORT}:8000
+    restart: always
+    env_file:
+      - .env
+
+  db:
+    container_name: db_postgres
+    image: postgres
+    environment:
+      - POSTGRES_DB=rielters
+      - POSTGRES_USER=${POSTGRESS_DB_USER}
+      - POSTGRES_PASSWORD=${POSTGRESS_DB_PASSWORD}
+    ports:
+      - ${POSTGRESS_DB_HOST_PORT}:5432
+    volumes:
+      - .postgres:/var/lib/postgres/data
+    restart: always

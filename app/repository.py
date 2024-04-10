@@ -37,6 +37,26 @@ class Repository:
         
 
     @classmethod
+    async def edit_user(cls, data: User) -> bool:
+        async with new_session() as session:
+            try:
+                old_user = await session.get(UserOrm, data.id)
+                old_user.type = UserTypesOrm[data.type.name]
+                old_user.birthday = data.birthday
+                old_user.gender = data.gender
+                old_user.login = data.login
+                old_user.password = data.password
+                old_user.name = data.name
+                old_user.phone = data.phone
+                old_user.photo = data.photo
+                await session.flush()
+            except:
+                return False
+            await session.commit()
+            return True
+        
+
+    @classmethod
     async def get_user_by_id(cls, id: int) -> UserOrm:
         async with new_session() as session:
             try:
@@ -87,7 +107,6 @@ class Repository:
             try:
                 new_note = NoteOrm(**data.model_dump())
                 new_note.id = None
-                #new_note.date_time = int(datetime.now() - datetime(1970, 1, 1).total_seconds())
                 session.add(new_note)
                 await session.flush()
                 note_id = new_note.id

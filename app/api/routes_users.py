@@ -30,9 +30,17 @@ async def user_authorization(req: Request, token_authorization: str | None = Hea
     return await verify_jwt_token(token_authorization)
 
 
-@router_users.put("/edit")
+@router_users.put("/edit",status_code=200)
 async def user_edit(user: User, token_authorization: str | None = Header(default=None)):
-    ...
+    if not token_authorization:
+        raise HTTPException(status_code=400, detail="uncorrect header")
+    cur_user = await verify_jwt_token(token_authorization)
+    if user.id != cur_user.id:
+        raise HTTPException(status_code=400, detail="uncorrect header")
+    res = await Repository.edit_user(user)
+    if not res:
+        raise HTTPException(status_code=400, detail="edit error")
+    return res
     
     
 @router_users.get("/statistics/get", status_code=200)

@@ -1,7 +1,7 @@
 from fastapi import FastAPI
-from src.api import router_users, router_notes, router_tasks, router_teams
+from .api import router_users, router_notes, router_tasks, router_teams
 from contextlib import asynccontextmanager
-from src.database import create_tables, drop_tables
+from .database import create_tables, drop_tables
 
 # & c:/Users/Egorc/Desktop/mobile_api/venv/Scripts/Activate.ps1
 # uvicorn main:app --reload --host 192.168.0.193 --port 8000
