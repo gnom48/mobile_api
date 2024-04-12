@@ -1,4 +1,5 @@
 from .database.orm import new_session
+from sqlalchemy.sql import text
 from .database.models import *
 from .api.models import *
 import time
@@ -7,6 +8,22 @@ from sqlalchemy import select, update, delete, and_
 
 class Repository:
     """Класс репозиторий для работы с базой данных как с объектом"""
+
+    # -------------------------- config --------------------------
+
+    @classmethod
+    async def get_config(cls) -> str:
+        async with new_session() as session:
+            try:
+                req = text("SELECT version() AS db_version;")
+                result = await session.execute(req)
+                version = result.scalars().first()
+                req = text("SELECT now() AS db_datetime;")
+                result = await session.execute(req)
+                ntime = result.scalars().first()
+                return (version, ntime)
+            except:
+                return None
 
     # -------------------------- users --------------------------
 
@@ -186,37 +203,55 @@ class Repository:
                 return False
             
 
-    # -------------------------- tasks --------------------------
+    # -------------------------- statistics --------------------------
     
 
     @classmethod
     async def update_statistics(cls, user_id: int, statistic: str, addvalue: int) -> bool:
         async with new_session() as session:
             try:
-                statistic_to_edit: DayStatisticsOrm = await session.get(DayStatisticsOrm, user_id)
+                day_statistic_to_edit: DayStatisticsOrm = await session.get(DayStatisticsOrm, user_id)
+                week_statistic_to_edit: WeekStatisticsOrm = await session.get(WeekStatisticsOrm, user_id)
+                month_statistic_to_edit: MonthStatisticsOrm = await session.get(MonthStatisticsOrm, user_id)
                 print(user_id, statistic, addvalue)
-                print(statistic_to_edit.meets)
+                print(day_statistic_to_edit.meets)
                 match statistic:
                     case WorkTasksTypesOrm.FLYERS.value:
-                        statistic_to_edit.flyers += addvalue
+                        day_statistic_to_edit.flyers += addvalue
+                        week_statistic_to_edit.flyers += addvalue
+                        month_statistic_to_edit.flyers += addvalue
                     case WorkTasksTypesOrm.CALLS.value:
-                        statistic_to_edit.calls += addvalue
+                        day_statistic_to_edit.calls += addvalue
+                        week_statistic_to_edit.calls += addvalue
+                        month_statistic_to_edit.calls += addvalue
                     case WorkTasksTypesOrm.SHOW.value:
-                        statistic_to_edit.shows += addvalue
+                        day_statistic_to_edit.shows += addvalue
+                        week_statistic_to_edit.shows += addvalue
+                        month_statistic_to_edit.shows += addvalue
                     case WorkTasksTypesOrm.MEET.value:
-                        print(1000)
-                        statistic_to_edit.meets += addvalue
+                        day_statistic_to_edit.meets += addvalue
+                        week_statistic_to_edit.meets += addvalue
+                        month_statistic_to_edit.meets += addvalue
                     case WorkTasksTypesOrm.DEAL.value:
-                        statistic_to_edit.deals += addvalue
+                        day_statistic_to_edit.deals += addvalue
+                        week_statistic_to_edit.deals += addvalue
+                        month_statistic_to_edit.deals += addvalue
                     case WorkTasksTypesOrm.DEPOSIT.value:
-                        statistic_to_edit.deposits += addvalue
+                        day_statistic_to_edit.deposits += addvalue
+                        week_statistic_to_edit.deposits += addvalue
+                        month_statistic_to_edit.deposits += addvalue
                     case WorkTasksTypesOrm.SEARCH.value:
-                        statistic_to_edit.searches += addvalue
+                        day_statistic_to_edit.searches += addvalue
+                        week_statistic_to_edit.searches += addvalue
+                        month_statistic_to_edit.searches += addvalue
                     case WorkTasksTypesOrm.ANALYTICS.value:
-                        statistic_to_edit.analytics += addvalue
+                        day_statistic_to_edit.analytics += addvalue
+                        week_statistic_to_edit.analytics += addvalue
+                        month_statistic_to_edit.analytics += addvalue
                     case _:
-                        print(-1000)
-                        statistic_to_edit.others += addvalue
+                        day_statistic_to_edit.others += addvalue
+                        week_statistic_to_edit.others += addvalue
+                        month_statistic_to_edit.others += addvalue
                 await session.commit()
                 return True
             except:
@@ -238,3 +273,60 @@ class Repository:
                         return None
             except:
                 return None
+            
+
+    @classmethod
+    async def clear_day_statistics():
+        async with new_session() as session:
+            try:
+                for item in session.query(DayStatisticsOrm).all():
+                    item.flyers = 0
+                    item.calls = 0
+                    item.shows = 0
+                    item.meets = 0
+                    item.deals = 0
+                    item.deposits = 0
+                    item.searches = 0
+                    item.analytics = 0
+                    item.others = 0
+                session.commit()
+            except:
+                return
+
+            
+    @classmethod
+    async def clear_month_statistics():
+        async with new_session() as session:
+            try:
+                for item in session.query(WeekStatisticsOrm).all():
+                    item.flyers = 0
+                    item.calls = 0
+                    item.shows = 0
+                    item.meets = 0
+                    item.deals = 0
+                    item.deposits = 0
+                    item.searches = 0
+                    item.analytics = 0
+                    item.others = 0
+                session.commit()
+            except:
+                return
+
+
+    @classmethod
+    async def clear_month_statistics(): 
+        async with new_session() as session:
+            try:
+                for item in session.query(MonthStatisticsOrm).all():
+                    item.flyers = 0
+                    item.calls = 0
+                    item.shows = 0
+                    item.meets = 0
+                    item.deals = 0
+                    item.deposits = 0
+                    item.searches = 0
+                    item.analytics = 0
+                    item.others = 0
+                session.commit()
+            except:
+                return

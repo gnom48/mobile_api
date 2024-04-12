@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException, Header, Request
 from .models import User, Statistics
 from ..repository import *
+from datetime import datetime
 from .jwt import create_jwt_token, verify_jwt_token
 
 
@@ -64,3 +65,8 @@ async def user_statistics_update(statistic: str, addvalue: int, token_authorizat
 @router_users.get("/teames")
 async def user_teames(token_authorization: str | None = Header(default=None)):
     ...
+
+
+@router_users.get("/config", status_code=200)
+async def server_config_get():
+    return { "postgres" : await Repository.get_config(), "api_datetime" : datetime.now() }
