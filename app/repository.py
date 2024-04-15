@@ -295,7 +295,7 @@ class Repository:
 
             
     @classmethod
-    async def clear_month_statistics():
+    async def clear_week_statistics():
         async with new_session() as session:
             try:
                 for item in session.query(WeekStatisticsOrm).all():
