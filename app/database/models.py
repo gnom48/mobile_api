@@ -58,7 +58,8 @@ class TaskOrm(BaseModelOrm):
     date_time: Mapped[int]
     duration_seconds: Mapped[int]
     user_id: Mapped[int] = mapped_column(ForeignKey(UserOrm.id, ondelete="CASCADE"))
-
+    notification_id: Mapped[int]
+    
 
 class TeamOrm(BaseModelOrm):
     __tablename__ = "teams"

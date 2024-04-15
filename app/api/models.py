@@ -56,7 +56,7 @@ class Task(BaseModel):
     desc: Optional[str]
     duration_seconds: int
     user_id: int
-
+    notification_id: int
 
 class Team(BaseModel):
     id: int
