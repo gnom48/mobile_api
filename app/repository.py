@@ -31,6 +31,7 @@ class Repository:
     @classmethod
     async def registrate_user(cls, data: User) -> bool:
         async with new_session() as session:
+            new_user_id = -1
             try:
                 new_user = UserOrm(**data.model_dump())
                 new_user.type = UserTypesOrm[data.type.name]
@@ -38,8 +39,9 @@ class Repository:
                 new_user.id = None
                 session.add(new_user)
                 await session.flush()
+                new_user_id = new_user.id
             except:
-                return False
+                return new_user_id
             
             day_stats = DayStatisticsOrm()
             day_stats.user_id = new_user.id
@@ -52,7 +54,7 @@ class Repository:
             session.add(month_stats)
 
             await session.commit()
-            return True
+            return new_user_id
         
 
     @classmethod
