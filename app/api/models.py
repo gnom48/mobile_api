@@ -24,6 +24,7 @@ class WorkTasksTypes(str, Enum):
     DEPOSIT = "Получение задатка"
     SEARCH = "Поиск объектов"
     ANALYTICS = "Аналитика рынка"
+    OTHER = "Нечто особенное"
 
 
 class User(BaseModel):
