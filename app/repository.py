@@ -345,11 +345,10 @@ class Repository:
                 for t in teams_user:
                     team = await session.get(TeamOrm, t.team_id)
                     team_with_info = TeamWithInfo(team=team, members=[])
-                    team_with_info.team = team
                     query__ = select(UserTeamOrm).where(UserTeamOrm.team_id == team.id)
                     r__ = await session.execute(query__)
                     team_users__ = list(r__.scalars().all())
-                    team_with_info.members = [UserWithStats(user=await session.get(UserOrm, i.user_id), statistics={j : await Repository.get_statistics_by_period(period=j, user_id=i.user_id) for j in [StatisticPeriods.DAY_STATISTICS_PERIOD, StatisticPeriods.WEEK_STATISTICS_PERIOD, StatisticPeriods.MONTH_STATISTICS_PERIOD]}, role=t.role.name) for i in team_users__]
+                    team_with_info.members = [UserWithStats(user=await session.get(UserOrm, i.user_id), statistics={j : await Repository.get_statistics_by_period(period=j, user_id=i.user_id) for j in [StatisticPeriods.DAY_STATISTICS_PERIOD, StatisticPeriods.WEEK_STATISTICS_PERIOD, StatisticPeriods.MONTH_STATISTICS_PERIOD]}, role=i.role.name) for i in team_users__]
                     res_teams.append(team_with_info)
                 return res_teams
             except:
