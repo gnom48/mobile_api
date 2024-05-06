@@ -1,7 +1,8 @@
 from pydantic import BaseModel
 from enum import Enum
 from datetime import datetime
-from typing import Optional
+from typing import Dict, Optional, Union
+from app.database.models import TeamOrm, UserOrm
 
 
 class StatisticPeriods(str, Enum):
@@ -59,11 +60,12 @@ class Task(BaseModel):
     user_id: int
     notification_id: int
 
+
 class Team(BaseModel):
     id: int
     name: str
     created_date_time: datetime
-    
+
 
 class UserStatuses(str, Enum):
     OWNER = "Владелец"
@@ -80,6 +82,7 @@ class Statistics(BaseModel):
     user_id: int
     data: int
 
+
 class StatisticsOrm(BaseModel):
     user_id: int
     flyers: int
@@ -91,3 +94,17 @@ class StatisticsOrm(BaseModel):
     searches: int
     analytics: int
     others: int
+
+
+class UserWithStats:
+    def __init__(self, user: UserOrm, statistics: Dict[StatisticPeriods, Union[None, StatisticsOrm]], role: UserStatuses):
+        self.user = user
+        self.statistics = statistics
+        self.role = role
+
+
+
+class TeamWithInfo:
+    def __init__(self, team: TeamOrm, members: list[UserWithStats]):
+        self.team = team
+        self.members = members

@@ -215,8 +215,6 @@ class Repository:
                 day_statistic_to_edit: DayStatisticsOrm = await session.get(DayStatisticsOrm, user_id)
                 week_statistic_to_edit: WeekStatisticsOrm = await session.get(WeekStatisticsOrm, user_id)
                 month_statistic_to_edit: MonthStatisticsOrm = await session.get(MonthStatisticsOrm, user_id)
-                print(user_id, statistic, addvalue)
-                print(day_statistic_to_edit.meets)
                 match statistic:
                     case WorkTasksTypesOrm.FLYERS.value:
                         day_statistic_to_edit.flyers += addvalue
@@ -261,7 +259,7 @@ class Repository:
             
     
     @classmethod
-    async def get_statistics_by_period(cls, user_id: int, period: str) -> Statistics:
+    async def get_statistics_by_period(cls, user_id: int, period: str) -> StatisticsOrm:
         async with new_session() as session:
             try:
                 match period:
@@ -291,6 +289,7 @@ class Repository:
                     item.searches = 0
                     item.analytics = 0
                     item.others = 0
+                    session.flush()
                 session.commit()
             except:
                 return
@@ -332,3 +331,97 @@ class Repository:
                 session.commit()
             except:
                 return
+            
+    # -------------------------- teams --------------------------
+
+    @classmethod
+    async def get_all_teams_by_user_id(cls, user_id: int) -> list[TeamWithInfo]:
+        async with new_session() as session:
+            try:
+                query = select(UserTeamOrm).where(UserTeamOrm.user_id == user_id)
+                r = await session.execute(query)
+                teams_user = list(r.scalars().all())
+                res_teams = list[TeamWithInfo]()
+                for t in teams_user:
+                    team = await session.get(TeamOrm, t.team_id)
+                    team_with_info = TeamWithInfo(team=team, members=[])
+                    team_with_info.team = team
+                    query__ = select(UserTeamOrm).where(UserTeamOrm.team_id == team.id)
+                    r__ = await session.execute(query__)
+                    team_users__ = list(r__.scalars().all())
+                    team_with_info.members = [UserWithStats(user=await session.get(UserOrm, i.user_id), statistics={j : await Repository.get_statistics_by_period(period=j, user_id=i.user_id) for j in [StatisticPeriods.DAY_STATISTICS_PERIOD, StatisticPeriods.WEEK_STATISTICS_PERIOD, StatisticPeriods.MONTH_STATISTICS_PERIOD]}, role=t.role.name) for i in team_users__]
+                    res_teams.append(team_with_info)
+                return res_teams
+            except:
+                return None
+
+
+    @classmethod
+    async def add_team(cls, data: Team, user_id: int) -> int:
+        async with new_session() as session:
+            try:
+                new_team = TeamOrm(**data.model_dump())
+                new_team.id = None
+                session.add(new_team)
+                await session.flush()
+                team_id = new_team.id
+                await session.commit()
+
+                user_team = UserTeamOrm()
+                user_team.role = UserStatusesOrm.OWNER
+                user_team.team_id = team_id
+                user_team.user_id = user_id
+                await Repository.join_to_team(user_team)
+
+                return team_id
+            except:
+                return None
+
+
+    @classmethod
+    async def del_team(cls, id: int) -> bool:
+        async with new_session() as session:
+            try:
+                team_to_del = await session.get(TeamOrm, id)
+                await session.delete(team_to_del)
+                await session.commit()
+                return True
+            except:
+                return False
+                
+    
+    @classmethod
+    async def edit_team(cls, data: Team) -> bool:
+        async with new_session() as session:
+            try:
+                team_to_edit = await session.get(TeamOrm, data.id)
+                team_to_edit.name = data.name
+                await session.commit()
+                return True
+            except:
+                return False
+            
+
+    @classmethod
+    async def join_to_team(cls, data: UserTeamOrm) -> bool:
+        async with new_session() as session:
+            try:
+                session.add(data)
+                await session.commit()
+                return True
+            except:
+                return False
+
+
+    @classmethod
+    async def leave_team(cls, user_id: int, team_id: int) -> bool:
+        async with new_session() as session:
+            try:
+                query = select(UserTeamOrm).where(UserTeamOrm.user_id == user_id).where(UserTeamOrm.team_id == team_id)
+                r = await session.execute(query)
+                user_team_to_del = r.scalars().first()
+                await session.delete(user_team_to_del)
+                await session.commit()
+                return True
+            except:
+                return False
