@@ -276,7 +276,7 @@ class Repository:
             
 
     @classmethod
-    async def clear_day_statistics():
+    async def clear_day_statistics(cls):
         async with new_session() as session:
             try:
                 for item in session.query(DayStatisticsOrm).all():
@@ -296,7 +296,7 @@ class Repository:
 
             
     @classmethod
-    async def clear_week_statistics():
+    async def clear_week_statistics(cls):
         async with new_session() as session:
             try:
                 for item in session.query(WeekStatisticsOrm).all():
@@ -315,7 +315,7 @@ class Repository:
 
 
     @classmethod
-    async def clear_month_statistics(): 
+    async def clear_month_statistics(cls): 
         async with new_session() as session:
             try:
                 for item in session.query(MonthStatisticsOrm).all():
