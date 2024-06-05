@@ -3,7 +3,7 @@ from .consts import CONNRCTION_STR
 from .models import *
 
 
-async_engine = create_async_engine(CONNRCTION_STR, echo=True, pool_size=5, max_overflow=10)
+async_engine = create_async_engine(CONNRCTION_STR, echo=True, pool_size=5, max_overflow=10, echo=False)
 
 new_session = async_sessionmaker(async_engine, expire_on_commit=False)
 
