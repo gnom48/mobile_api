@@ -25,11 +25,15 @@ async def team_delete(team_id: int, token_authorization: str | None = Header(def
 
 
 @router_teams.post("/join")
-async def team_join(team_id: int, token_authorization: str | None = Header(default=None)):
+async def team_join(team_id: int, joined_by: int, token_authorization: str | None = Header(default=None)):
     if not token_authorization:
         raise HTTPException(status_code=400, detail="uncorrect header")
     user = await verify_jwt_token(token_authorization)
-    # TODO: проверка доступа 
+    try:
+        if not await Repository.get_user_by_id(joined_by):
+            raise HTTPException(status_code=404, detail="Пригласитель не действителен!")
+    except:
+        raise HTTPException(status_code=404, detail="Пригласитель не действителен!")
     user_team = UserTeamOrm()
     user_team.role = UserStatusesOrm.USER
     user_team.team_id = team_id
