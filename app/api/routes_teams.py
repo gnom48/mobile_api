@@ -13,7 +13,15 @@ async def team_add(team: Team, token_authorization: str | None = Header(default=
     if not token_authorization:
         raise HTTPException(status_code=400, detail="uncorrect header")
     user = await verify_jwt_token(token_authorization)
-    return await Repository.add_team(data=team, user_id=user.id)
+    ret_val_team_id = await Repository.add_team(data=team, user_id=user.id)
+    user_team = UserTeamOrm()
+    user_team.role = UserStatusesOrm.OWNER
+    user_team.team_id = ret_val_team_id
+    user_team.user_id = user.id
+    res_add = await Repository.join_to_team(user_team)
+    if not res_add:
+        raise HTTPException(status_code=400, detail="not able to join self")
+    return ret_val_team_id
 
 
 @router_teams.delete("/delete")
