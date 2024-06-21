@@ -96,12 +96,19 @@ class StatisticsOrm(BaseModel):
     others: int
 
 
+class AddresInfo(BaseModel):
+    user_id: int
+    address: str
+    lat: float
+    lon: float
+    date_time: int
+
+
 class UserWithStats:
     def __init__(self, user: UserOrm, statistics: Dict[StatisticPeriods, Union[None, StatisticsOrm]], role: UserStatuses):
         self.user = user
         self.statistics = statistics
         self.role = role
-
 
 
 class TeamWithInfo:

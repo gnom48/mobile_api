@@ -1,5 +1,5 @@
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from sqlalchemy import ForeignKey, Column, Integer, String
+from sqlalchemy import ForeignKey, Column, Integer, String, Float
 from datetime import datetime
 from enum import Enum
 from typing import Annotated
@@ -121,3 +121,13 @@ class MonthStatisticsOrm(BaseModelOrm):
     searches = Column(Integer, default=0)
     analytics = Column(Integer, default=0)
     others = Column(Integer, default=0)
+
+
+class AddresInfoOrm(BaseModelOrm):
+    __tablename__ = "addreses_info"
+    record_id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, default=0)
+    address = Column(String, default=0)
+    lat = Column(Float, default=0.0)
+    lon = Column(Float, default=0.0)
+    date_time = Column(Integer, default=0)
