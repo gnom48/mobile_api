@@ -430,22 +430,22 @@ class Repository:
 
 
     @classmethod
-    async def add_address_info(data: AddresInfo) -> bool:
+    async def add_address_info(cls, data: AddresInfo) -> bool:
         async with new_session() as session:
             try:
                 addres_info_orm = AddresInfoOrm(**data.model_dump())
                 addres_info_orm.record_id = None
                 session.add(addres_info_orm)
                 await session.flush()
-                record_id = addres_info_orm.id
+                record_id = addres_info_orm.record_id
                 await session.commit()
-                return True
+                return record_id
             except:
-                return False
+                return None
 
 
     @classmethod
-    async def get_address_info_by_user_id(user_id: int) -> list[AddresInfoOrm] | None:
+    async def get_address_info_by_user_id(cls, user_id: int) -> list[AddresInfoOrm]:
         async with new_session() as session:
             try:
                 query = select(AddresInfoOrm).where(AddresInfoOrm.user_id == user_id)
@@ -457,7 +457,7 @@ class Repository:
 
 
     @classmethod
-    async def get_address_info_for_team(team_id: int) -> dict | None:
+    async def get_address_info_for_team(cls, team_id: int) -> dict | None:
         async with new_session() as session:
             try:
                 query_users = select(UserTeamOrm).where(UserTeamOrm.team_id == team_id)
