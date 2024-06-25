@@ -42,24 +42,6 @@ async def user_edit(user: User, token_authorization: str | None = Header(default
     if not res:
         raise HTTPException(status_code=400, detail="edit error")
     return res
-    
-    
-@router_users.get("/statistics/get", status_code=200)
-async def user_statistics_get(period: str, token_authorization: str | None = Header(default=None)):
-    if not token_authorization:
-        raise HTTPException(status_code=400, detail="uncorrect header")
-    user = await verify_jwt_token(token_authorization)
-    res = await Repository.get_statistics_by_period(user.id, period)
-    return res
-
-
-@router_users.get("/statistics/update", status_code=200)
-async def user_statistics_update(statistic: str, addvalue: int, token_authorization: str | None = Header(default=None)):
-    if not token_authorization:
-        raise HTTPException(status_code=400, detail="uncorrect header")
-    user = await verify_jwt_token(token_authorization)
-    res = await Repository.update_statistics(user.id, statistic, addvalue)
-    return res
 
 
 @router_users.get("/teames")

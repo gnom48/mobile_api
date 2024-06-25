@@ -115,3 +115,25 @@ class TeamWithInfo:
     def __init__(self, team: TeamOrm, members: list[UserWithStats]):
         self.team = team
         self.members = members
+
+
+class UserKpiLevels(str, Enum):
+    TRAINEE = "Стажер"
+    SPECIALIST = "Специалист"
+    EXPERT = "Эксперт"
+    TOP = "ТОП"
+
+
+class LastMonthStatisticsWithKpi(BaseModel):
+    user_id: int
+    flyers: int
+    calls: int 
+    shows: int 
+    meets: int 
+    deals: int 
+    deposits: int 
+    searches: int 
+    analytics: int 
+    others: int 
+    user_level: UserKpiLevels
+    salary_percentage: float

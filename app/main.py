@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from .api import router_users, router_notes, router_tasks, router_teams, router_addresses
+from .api import router_users, router_notes, router_tasks, router_teams, router_addresses, router_statistics
 from contextlib import asynccontextmanager
 from .repository import Repository
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -35,3 +35,4 @@ app.include_router(router_notes)
 app.include_router(router_tasks)
 app.include_router(router_users)
 app.include_router(router_addresses)
+app.include_router(router_statistics)

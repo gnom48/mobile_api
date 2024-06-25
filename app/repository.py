@@ -1,3 +1,4 @@
+from app.api.kpi_calculator import RealEstateAgentKPI
 from .database.orm import new_session
 from sqlalchemy.sql import text
 from .database.models import *
@@ -273,6 +274,15 @@ class Repository:
                         return None
             except:
                 return None
+                
+                
+    @classmethod
+    async def get_statistics_with_kpi(cls, user_id: int) -> StatisticsOrm:
+        async with new_session() as session:
+            try:
+                return await session.get(LastMonthStatisticsWithKpiOrm, user_id)
+            except:
+                return None
             
 
     @classmethod
@@ -319,6 +329,24 @@ class Repository:
         async with new_session() as session:
             try:
                 for item in session.query(MonthStatisticsOrm).all():
+                    cur_user_record = await session.get(LastMonthStatisticsWithKpiOrm, item.user_id)
+                    cur_user_record.flyers = item.flyers
+                    cur_user_record.calls = item.calls
+                    cur_user_record.shows = item.shows
+                    cur_user_record.meets = item.meets
+                    cur_user_record.deals = item.deals
+                    cur_user_record.deposits = item.deposits
+                    cur_user_record.searches = item.searches
+                    cur_user_record.analytics = item.analytics
+                    cur_user_record.others = item.others
+                    calc = RealEstateAgentKPI(cur_user_record.user_level, item.deals, 0, 0, item.calls, item.meets, item.flyers, item.shows)
+                    cur_user_record.salary_percentage = calc.calculate_kpi()
+                session.commit()
+            except:
+                print("ошибка ежемесячной работы")
+
+            try:
+                for item in session.query(MonthStatisticsOrm).all():
                     item.flyers = 0
                     item.calls = 0
                     item.shows = 0
@@ -330,6 +358,7 @@ class Repository:
                     item.others = 0
                 session.commit()
             except:
+                print("ошибка ежемесячной работы")
                 return
             
     # -------------------------- teams --------------------------

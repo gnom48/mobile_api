@@ -131,3 +131,26 @@ class AddresInfoOrm(BaseModelOrm):
     lat = Column(Float, default=0.0)
     lon = Column(Float, default=0.0)
     date_time = Column(Integer, default=0)
+
+
+class UserKpiLevelsOrm(Enum):
+    TRAINEE = "Стажер"
+    SPECIALIST = "Специалист"
+    EXPERT = "Эксперт"
+    TOP = "ТОП"
+
+
+class LastMonthStatisticsWithKpiOrm(BaseModelOrm):
+    __tablename__ = "last_month_statistics_with_kpi"
+    user_id: Mapped[int] = mapped_column(ForeignKey(UserOrm.id, ondelete="CASCADE"), primary_key=True)
+    flyers = Column(Integer, default=0)
+    calls = Column(Integer, default=0)
+    shows = Column(Integer, default=0)
+    meets = Column(Integer, default=0)
+    deals = Column(Integer, default=0)
+    deposits = Column(Integer, default=0)
+    searches = Column(Integer, default=0)
+    analytics = Column(Integer, default=0)
+    others = Column(Integer, default=0)
+    user_level: Mapped[UserKpiLevelsOrm]
+    salary_percentage = Column(Float, default=0.0)
