@@ -283,6 +283,16 @@ class Repository:
                 return await session.get(LastMonthStatisticsWithKpiOrm, user_id)
             except:
                 return None
+                
+    @classmethod
+    async def update_kpi_level(cls, user_id: int, level: UserKpiLevels) -> StatisticsOrm:
+        async with new_session() as session:
+            try:
+                var = await session.get(LastMonthStatisticsWithKpiOrm, user_id)
+                var.user_level = UserKpiLevelsOrm[level.name]
+                session.commit()
+            except:
+                return None
             
 
     @classmethod
