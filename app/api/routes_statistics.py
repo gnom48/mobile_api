@@ -26,7 +26,7 @@ async def user_statistics_get_with_kpi(token_authorization: str | None = Header(
     return res
 
 
-@router_statistics.get("/update", status_code=200)
+@router_statistics.put("/update", status_code=200)
 async def user_statistics_update(statistic: str, addvalue: int, token_authorization: str | None = Header(default=None)):
     if not token_authorization:
         raise HTTPException(status_code=400, detail="uncorrect header")

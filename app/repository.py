@@ -290,7 +290,7 @@ class Repository:
             try:
                 var = await session.get(LastMonthStatisticsWithKpiOrm, user_id)
                 var.user_level = UserKpiLevelsOrm[level.name]
-                session.commit()
+                await session.commit()
             except:
                 return None
             
@@ -310,7 +310,7 @@ class Repository:
                     item.analytics = 0
                     item.others = 0
                     session.flush()
-                session.commit()
+                await session.commit()
             except:
                 return
 
@@ -329,7 +329,7 @@ class Repository:
                     item.searches = 0
                     item.analytics = 0
                     item.others = 0
-                session.commit()
+                await session.commit()
             except:
                 return
 
@@ -351,9 +351,9 @@ class Repository:
                     cur_user_record.others = item.others
                     calc = RealEstateAgentKPI(cur_user_record.user_level, item.deals, 0, 0, item.calls, item.meets, item.flyers, item.shows)
                     cur_user_record.salary_percentage = calc.calculate_kpi()
-                session.commit()
-            except:
-                print("ошибка ежемесячной работы")
+                await session.commit()
+            except Exception as e:
+                print(f"Ошибка ежемесячной работы: {e}")
 
             try:
                 for item in session.query(MonthStatisticsOrm).all():
@@ -366,9 +366,9 @@ class Repository:
                     item.searches = 0
                     item.analytics = 0
                     item.others = 0
-                session.commit()
-            except:
-                print("ошибка ежемесячной работы")
+                await session.commit()
+            except Exception as e:
+                print(f"Ошибка ежемесячной работы: {e}")
                 return
             
     # -------------------------- teams --------------------------
