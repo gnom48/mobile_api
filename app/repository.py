@@ -277,12 +277,13 @@ class Repository:
                 
                 
     @classmethod
-    async def get_statistics_with_kpi(cls, user_id: int) -> StatisticsOrm:
+    async def get_statistics_with_kpi(cls, user_id: int) -> LastMonthStatisticsWithKpiOrm:
         async with new_session() as session:
             try:
                 return await session.get(LastMonthStatisticsWithKpiOrm, user_id)
             except:
                 return None
+            
                 
     @classmethod
     async def update_kpi_level(cls, user_id: int, level: UserKpiLevels) -> StatisticsOrm:
@@ -338,7 +339,8 @@ class Repository:
     async def clear_month_statistics(cls): 
         async with new_session() as session:
             try:
-                for item in session.query(MonthStatisticsOrm).all():
+                month_select = await session.execute(select(MonthStatisticsOrm)).scalars().all()
+                for item in month_select:
                     cur_user_record = await session.get(LastMonthStatisticsWithKpiOrm, item.user_id)
                     cur_user_record.flyers = item.flyers
                     cur_user_record.calls = item.calls
@@ -356,7 +358,7 @@ class Repository:
                 print(f"Ошибка ежемесячной работы: {e}")
 
             try:
-                for item in session.query(MonthStatisticsOrm).all():
+                for item in month_select:
                     item.flyers = 0
                     item.calls = 0
                     item.shows = 0
